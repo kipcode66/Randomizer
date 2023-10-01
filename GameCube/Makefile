@@ -58,35 +58,6 @@ jp:
 eu:
 	@$(MAKE) --no-print-directory VERSION=eu
 
-deploy:
-	@status=$$(git status --porcelain); \
-	if test "x$${status}" = x; then \
-		echo Ready for deployment!; \
-		echo Twilight Princess :: $(PROJECT_NAME) > build.log; \
-		echo ------------------------- >> build.log; \
-		echo Version: $(_VERSION) >> build.log; \
-		echo Variant: $(_VARIANT) >> build.log; \
-		echo Build ID: $(BUILDID) >> build.log; \
-		printf "Build Log:\n\n-----\n" >> build.log; \
-		make clean; \
-		make all >> build.log; \
-		echo ----- >> build.log; \
-		echo Done. >> build.log; \
-		echo Working directory is dirty; \		echo Ready for deployment!; \
-		echo Twilight Princess :: $(PROJECT_NAME) > build.log; \
-		echo ------------------------- >> build.log; \
-		echo Version: $(_VERSION) >> build.log; \
-		echo Variant: $(_VARIANT) >> build.log; \
-		echo Build ID: $(BUILDID) >> build.log; \
-		printf "Build Log:\n\n-----\n" >> build.log; \
-		make clean; \
-		make all >> build.log; \
-		echo ----- >> build.log; \
-		echo Done. >> build.log; \
-	else \
-		echo Working directory isn\'t clean, cannot release like this...; \
-	fi
-
 clean:
 	@$(MAKE) --no-print-directory clean_target VERSION=us
 	@$(MAKE) --no-print-directory clean_target VERSION=jp
@@ -197,7 +168,7 @@ export BASE_MAPFILE	:= $(realpath assets/$(VERSION).lst)
 export BANNERFILE	:= $(realpath assets/banner.raw)
 export ICONFILE		:= $(realpath assets/icon.raw)
 
-export SUBREL		:= $(notdir $(wildcard subrel/*))
+export SUBREL		:= $(notdir $(filter-out %.txt,$(wildcard subrel/*)))
 export SUBREL_CLEAN	:= $(addsuffix /clean,$(SUBREL))
 export SUBRELS		:= $(foreach dir,$(SUBREL),$(ROOT_DIR)/subrel/$(dir)/$(dir).$(VERSION).rel)
 

@@ -1,0 +1,5 @@
+file(GLOB_RECURSE srcs CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp")
+file(GLOB_RECURSE asms CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/source/*.s")
+list(APPEND srcs ${asms})
+get_filename_component(rel_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+tpr_add_module(${rel_name} "${srcs}" "${CMAKE_CURRENT_SOURCE_DIR}/include")

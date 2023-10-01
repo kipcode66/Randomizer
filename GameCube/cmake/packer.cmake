@@ -1,0 +1,13 @@
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
+if(${PLATFORM} STREQUAL "GCN")
+    find_program(TPR_PACKER_EXE gcipack.py HINTS ${CMAKE_SOURCE_DIR}/bin/${TPR_PACKER_DIR})
+    if(NOT TPR_PACKER_EXE)
+        message(FATAL_ERROR "please put \"gcipack.py\" in the bin/ folder")
+    endif()
+elseif(${PLATFORM} STREQUAL "WII")
+    find_program(TPR_PACKER_EXE nandpack.py HINTS ${CMAKE_SOURCE_DIR}/bin/${TPR_PACKER_DIR})
+    if(NOT TPR_PACKER_EXE)
+        message(FATAL_ERROR "please put \"nandpack.py\" in the bin/ folder")
+    endif()
+endif()
+

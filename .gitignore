@@ -3,7 +3,7 @@
 **/*.rel
 **/*.elf
 **/*.gci
-**/build.*
+**/build*
 **/codehandler/*.bin
 **/codehandler/*.h
 **/autobuild.sh
