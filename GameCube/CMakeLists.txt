@@ -1,32 +1,46 @@
 cmake_minimum_required(VERSION 3.16)
 
-# Check if the platform is valid
-if(NOT DEFINED PLATFORM)
-    set(PLATFORM "GCN" CACHE STRING "The platform of the version to be patched (GCN or WII).")
-    message(STATUS "PLATFORM not defined, defaulting to ${PLATFORM}")
-elseif(NOT ${PLATFORM} STREQUAL "GCN")
-    if(NOT ${PLATFORM} STREQUAL "WII")
-        message(FATAL_ERROR "PLATFORM has to be either GCN or WII. \"${PLATFORM}\" was given.")
-    endif()
-endif()
+project(Randomizer
+        VERSION 1.1.0
+        DESCRIPTION "Twilight Princess Randomizer"
+        HOMEPAGE_URL "tprandomizer.com"
+        LANGUAGES C CXX ASM)
 
-if(${PLATFORM} STREQUAL "GCN")
+# # Check if the platform is valid
+# if(NOT DEFINED PLATFORM)
+#     set(PLATFORM "GCN" CACHE STRING "The platform of the version to be patched (GCN or WII).")
+#     message(STATUS "PLATFORM not defined, defaulting to ${PLATFORM}")
+# elseif(NOT ${PLATFORM} STREQUAL "GCN")
+#     if(NOT ${PLATFORM} STREQUAL "WII")
+#         message(FATAL_ERROR "PLATFORM has to be either GCN or WII. \"${PLATFORM}\" was given.")
+#     endif()
+# endif()
+
+message("system name: \"${CMAKE_SYSTEM_NAME}\", ${NINTENDO_GAMECUBE}")
+
+if("${CMAKE_SYSTEM_NAME}" STREQUAL "NintendoGameCube")
+    include($ENV{DEVKITPRO}/cmake/Platform/NintendoGameCube.cmake)
     # Supported regions for GCN
+    set(PLATFORM "GCN")
     list(APPEND TPR_SUPPORTED_REGIONS NTSCU NTSCJ PAL)
     set(TPR_REGION_SHORT_NTSCU "US")
     set(TPR_REGION_SHORT_NTSCJ "JP")
     set(TPR_REGION_SHORT_PAL "EU")
     set(TPR_BANNER "${CMAKE_SOURCE_DIR}/assets/banner.raw")
     set(TPR_ICON "${CMAKE_SOURCE_DIR}/assets/icon.raw")
-else()
+elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "NintendoWii")
+    include($ENV{DEVKITPRO}/cmake/Platform/NintendoWii.cmake)
     # Supported regions for Wii
+    set(PLATFORM "WII")
     list(APPEND TPR_SUPPORTED_REGIONS NTSCU_10 NTSCU_12 NTSCJ PAL)
-    set(TPR_REGION_SHORT_NTSCU_10 "US2")
-    set(TPR_REGION_SHORT_NTSCU_12 "US2")
+    set(TPR_REGION_SHORT_NTSCU_9 "US0")
+    set(TPR_REGION_SHORT_NTSCU_11 "US2")
     set(TPR_REGION_SHORT_NTSCJ "JP")
     set(TPR_REGION_SHORT_PAL "EU")
     set(TPR_BANNER "${CMAKE_SOURCE_DIR}/assets/wii_banner.raw")
-    set(TPR_ICON "${CMAKE_SOURCE_DIR}/assets/icons/tpr_0.raw")
+    set(TPR_ICON "${CMAKE_SOURCE_DIR}/assets/icons/tpr_-1.raw")
+else()
+    message(FATAL_ERROR "Cannot identify the platform to build for. Please make sure you are using the cmake command from DevkitPro.")
 endif()
 
 if(NOT DEFINED REGION)
@@ -65,7 +79,7 @@ list(APPEND CMAKE_MODULE_PATH
 )
 
 # Once we have the platform and region ready, we can check and setup the compiler toolchain.
-include(cmake/CheckDevkitPro.cmake)
+#include(cmake/CheckDevkitPro.cmake)
 
 include_directories(${DEVKITPRO_LIBOGC_INC})
 link_directories(${DEVKITPRO_LIBOGC_LIB})
@@ -73,12 +87,6 @@ link_directories(${DEVKITPRO_LIBOGC_LIB})
 include(cmake/packer.cmake)
 include(cmake/elf2rel.cmake)
 include(cmake/relmapper.cmake)
-
-project(Randomizer
-        VERSION 1.1.0
-        DESCRIPTION "Twilight Princess Randomizer"
-        HOMEPAGE_URL "tprandomizer.com"
-        LANGUAGES C CXX ASM)
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 
