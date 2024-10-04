@@ -14,3 +14,4 @@ Generator/bin
 *.DS_Store
 
 GameCube/bin/seed.bin
+GameCube/*.bin
