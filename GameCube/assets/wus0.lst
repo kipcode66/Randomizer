@@ -12,11 +12,18 @@
 80004338:memcpy
 8024df80:memalign
 
-// OSModule.o
-800030C8:osModuleList
+// OSTime.o
+8034f52c:OSGetTick
 
 // m_Do_printf.o
 800090a8:OSReport
+
+// OSModule.o
+// text
+8034b000:OSLink
+8034b24c:OSUnlink
+// data
+800030C8:osModuleList
 
 // m_Do_ext.o
 // text
@@ -181,6 +188,7 @@
 80372c50:NANDInit
 803734a8:NANDInitBanner
 8037368c:NANDCheck
+8037349c:nandGetHomeDir
 
 // OSCache.o
 // 80346148:DCEnable
@@ -242,6 +250,10 @@
 803be1f4:_savegpr_30
 803be1f8:_savegpr_31
 803be470:__umoddi3
+
+// d_meter_HIO.o
+// data
+804bb5d8:g_drawHIO
 
 // mem.o
 803c0a38:memcmp
@@ -453,6 +465,9 @@
 // Z2SceneMgr.o
 8029c67c:sceneChange
 
+// Z2AudioMgr.o
+8044a6ac:g_mDoAud_zelAudio
+
 // Z2SeqMgr.o
 802989c8:startBattleBgm
 
@@ -464,6 +479,12 @@
 
 //dvdfs.o
 803615b4:DVDConvertPathToEntrynum
+80361924:DVDOpen
+80361bd0:DVDClose
+80361ee8:DVDReadPrio
+80362018:DVDOpenDir
+803622b0:DVDReadDir
+8036233c:DVDCloseDir
 
 //d_meter2_info.o
 804bcb78:g_meter2_info
@@ -527,6 +548,11 @@
 
 // mem.o
 803c0914:memmove
+
+// OSInterrupt.o
+8034a2e0:OSDisableInterrupts
+8034a2f4:OSEnableInterrupts
+8034a308:OSRestoreInterrupts
 
 80011f24:myExceptionCallback
 802261e0:setTag
