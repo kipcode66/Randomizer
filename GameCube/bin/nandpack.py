@@ -27,7 +27,7 @@ import struct
 import ctypes
 from io import FileIO
 from enum import IntEnum
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union
 import hashlib
 import secrets
 import json
@@ -550,7 +550,7 @@ class Point:
         return Point(rx, ry)
 
     def __mul__(self, other):
-        if not isinstance(other, bytes | bytearray | memoryview):
+        if not isinstance(other, Union[bytes, bytearray, memoryview]):
             raise TypeError(
                 f"Point only multiplies with bytes, "
                 f"got {other.__class__.__name__}")
