@@ -1741,8 +1741,6 @@ def main():
     elif args.command == "files":
         if args.files_cmd == "add":
             file_path = args.save.name
-            logging.debug(f"file_path: {file_path}")
-            logging.debug(f"files: {args.file}")
             for file in args.file:
                 file_name = file
                 logging.info(f"Loading '{file_name}'...")
