@@ -21,9 +21,9 @@ endif
 OUTPUT_FILENAME := boot
 
 # DON'T TOUCH UNLESS YOU KNOW WHAT YOU'RE DOING
-LIBTP_REL := $(ROOT_DIR)/externals/libtp_rel
+LIBTP_REL := $(_ROOT_DIR)/externals/libtp_rel
 
-JSON_READ := python3 $(abspath $(ROOT_DIR)/bin/json_read.py)
+JSON_READ := python3 $(abspath $(_ROOT_DIR)/bin/json_read.py)
 
 ifeq ($(VERSION),)
 all: gcn wii
@@ -66,7 +66,7 @@ TARGET		:=	$(OUTPUT_FILENAME).$(VERSION)
 BUILD		:=	build.$(VERSION)
 SOURCES		:=	$(CURDIR)/source $(wildcard $(CURDIR)/source/*) $(LIBTP_REL)/source $(wildcard $(LIBTP_REL)/source/*)
 DATA		:=	data
-INCLUDES	:=	$(CURDIR)/include $(ROOT_DIR)/include $(LIBTP_REL)/include
+INCLUDES	:=	$(CURDIR)/include $(_ROOT_DIR)/include $(LIBTP_REL)/include
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -169,8 +169,8 @@ export HFILES := $(addsuffix .h,$(subst .,_,$(BINFILES)))
 # For REL linking
 export LDFILES		:= $(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.ld)))
 # These are already defined from the root's Makefile
-#export MAPFILE		:= $(abspath $(ROOT_DIR)/build.$(VERSION)/temp.$(VERSION).lst)
-#export MODIDS		:= $(realpath $(ROOT_DIR)/assets/modids.json)
+#export MAPFILE		:= $(abspath $(_ROOT_DIR)/build.$(VERSION)/temp.$(VERSION).lst)
+#export MODIDS		:= $(realpath $(_ROOT_DIR)/assets/modids.json)
 
 #---------------------------------------------------------------------------------
 # build a list of include paths

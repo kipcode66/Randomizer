@@ -37,7 +37,9 @@ OUTPUT_FILENAME := Randomizer
 # DON'T TOUCH UNLESS YOU KNOW WHAT YOU'RE DOING
 LIBTP_REL := externals/libtp_rel
 
-export ROOT_DIR ?= $(CURDIR)
+ifeq ($(_ROOT_DIR),)
+export _ROOT_DIR := $(CURDIR)
+endif
 
 export GCIPACK := python3 $(realpath ../bin/gcipack.py)
 
@@ -218,7 +220,7 @@ endif
 
 # For REL linking
 export LDFILES		:= $(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.ld)))
-export MAPFILE		:= $(ROOT_DIR)/$(BUILD)/temp.$(VERSION).lst
+export MAPFILE		:= $(_ROOT_DIR)/$(BUILD)/temp.$(VERSION).lst
 export MODIDS		:= $(realpath assets/modids.json)
 export BASE_MAPFILE	:= $(realpath assets/$(VERSION).lst)
 export ICONFILE		:= $(realpath assets/icon.raw)
@@ -226,14 +228,14 @@ export BANNERFILE	:= $(realpath assets/$(BANNER_PREFIX)_banner.raw)
 
 export SUBREL		:= $(notdir $(wildcard subrel/*))
 export SUBREL_CLEAN	:= $(addsuffix /clean,$(SUBREL))
-export SUBRELS		:= $(foreach dir,$(SUBREL),$(ROOT_DIR)/subrel/$(dir)/$(dir).$(VERSION).rel)
+export SUBRELS		:= $(foreach dir,$(SUBREL),$(_ROOT_DIR)/subrel/$(dir)/$(dir).$(VERSION).rel)
 
 #---------------------------------------------------------------------------------
 # build a list of include paths
 #---------------------------------------------------------------------------------
 export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(dir)) \
 			$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
-			-I$(ROOT_DIR)/$(BUILD) \
+			-I$(_ROOT_DIR)/$(BUILD) \
 			-I$(LIBOGC_INC)
 
 #---------------------------------------------------------------------------------
@@ -288,7 +290,7 @@ $(MAPFILE): $(OUTPUT).elf $(BASE_MAPFILE) $(MODIDS)
 
 $(SUBREL): $(MAPFILE)
 	@echo making $@ ...
-	@$(MAKE) -C $(abspath $(ROOT_DIR)/subrel/$@)
+	@$(MAKE) -C $(abspath $(_ROOT_DIR)/subrel/$@)
 	@echo $@ ... Done
 
 # REL linking
@@ -309,7 +311,11 @@ else ifeq ($(PLATFORM),wii)
 %.bin: %.rel
 	@echo packing ... $(notdir $@)
 	@$(NANDPACK) generate -g $(PACKVER) -l 2 -f "$(PROJECT_NAME)" $< $(BANNERFILE) $@
-	@$(NANDPACK) files add $@ $(SUBRELS) $(addprefix --map ,$(foreach subrel,$(SUBRELS),$(subrel):rel/$(notdir $(subrel:%.$(VERSION).rel=%.rel))))
+ifeq ($(OS), Windows_NT)
+	@$(NANDPACK) files add "$@" "$(SUBRELS)" $(addprefix --map ,"$(foreach subrel,$(SUBRELS),$(shell cygpath -w $(subrel)):rel/$(notdir $(subrel:%.$(VERSION).rel=%.rel)))")
+else
+	@$(NANDPACK) files add "$@" "$(SUBRELS)" $(addprefix --map ,"$(foreach subrel,$(SUBRELS),$(subrel):rel/$(notdir $(subrel:%.$(VERSION).rel=%.rel)))")
+endif
 ifneq ("$(wildcard $(SEED_PATH))","")
 	@echo injecting seed ...
 	@$(NANDPACK) files add $@ $(SEED_PATH) -M "$(SEED_PATH):seed.bin"

@@ -1354,7 +1354,7 @@ def main():
                     "The output has to be a file; Got a directory")
         return string
 
-    file_map_parser_re = re.compile("^([^\\:]*?)\\:([^\\:]*?)$")
+    file_map_parser_re = re.compile("^((?:[^\\:]\\:)?[^\\:]*?)\\:([^\\:]*?)$")
     def fileMapParser(string):
         m = file_map_parser_re.match(string)
         if not m:
@@ -1362,7 +1362,7 @@ def main():
         if len(m.group(2)) > 31:
             raise argparse.ArgumentTypeError(
                 f"File path is too long (31 characters max; got {len(m.group(2))})")
-        return string
+        return string.replace("\\", "/")
 
     class NameMapping:
         def __init__(self, old, new):
@@ -1522,8 +1522,8 @@ def main():
         'wb'), default=None, help="Path to where to store the result (default: overwrites 'save')")
     files_add_parser.add_argument(
         "-M", "--map", action="extend", nargs='*', type=fileMapParser, help="Map a file name to an other one")
-    files_add_parser.add_argument("file", type=argparse.FileType(
-        'rb'), nargs="+", metavar="<file>", help="Path to the file(s) to add to the save")
+    files_add_parser.add_argument(
+        "file", type=str, nargs="+", metavar="<file>", help="Path to the file(s) to add to the save")
     # Files; List
     files_list_parser = files_subparser.add_parser(
         "list", description="Lists the file(s) within a given save", help="Lists the files within a given save")
@@ -1741,10 +1741,12 @@ def main():
     elif args.command == "files":
         if args.files_cmd == "add":
             file_path = args.save.name
+            logging.debug(f"file_path: {file_path}")
+            logging.debug(f"files: {args.file}")
             for file in args.file:
-                file_name = file.name
+                file_name = file
                 logging.info(f"Loading '{file_name}'...")
-                with file as f:
+                with open(file, 'rb') as f:
                     file_data = f.read()
                 logging.debug(f"Adding '{file_name}'...")
                 if file_name in mappings.keys():
